@@ -6,6 +6,8 @@
 
 ## Windows 便携版
 
+[**下载 TerraFrames v0.1.0 · Windows 64 位 ZIP**](https://github.com/Duixiansheng/terraframes/releases/download/v0.1.0/terraframes-v0.1.0-windows-x64.zip)
+
 解压整个 `TerraFrames` 文件夹，运行 `TerraFrames.exe`。无需另装 Python。检查和预览在本机进行，源影像保持只读。
 
 ## 用样例试一次
