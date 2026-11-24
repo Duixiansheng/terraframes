@@ -1,0 +1,54 @@
+name: Publish Windows portable ZIP
+
+on:
+  push:
+    paths:
+      - '.github/workflows/windows-release.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: windows-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      OPENBLAS_NUM_THREADS: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          architecture: x64
+      - name: Build and publish TerraFrames v0.1.0
+        shell: pwsh
+        run: |
+          python -m pip install -r requirements.txt pyinstaller==6.22.3
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python -m PyInstaller --onedir --windowed --noupx --name TerraFrames --collect-all rasterio desktop.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $app = 'dist/TerraFrames'
+          python make_demo.py "$app/demo"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Copy-Item README.md "$app/README.md"
+          $notices = New-Item "$app/ThirdPartyNotices" -ItemType Directory
+          $pythonHome = python -c "import sys; print(sys.base_prefix)"
+          Copy-Item "$pythonHome/LICENSE.txt" $notices.FullName
+          $tcl = Get-ChildItem "$pythonHome/tcl" -Filter license.terms -Recurse
+          foreach ($notice in $tcl) {
+            Copy-Item $notice.FullName (Join-Path $notices.FullName ($notice.Directory.Name + '-license.terms'))
+          }
+          $sitePackages = python -c "import sysconfig; print(sysconfig.get_path('purelib'))"
+          Get-ChildItem $sitePackages -Directory -Filter '*.dist-info' | ForEach-Object {
+            $destination = New-Item (Join-Path $notices.FullName $_.Name) -ItemType Directory
+            Get-ChildItem $_.FullName | Where-Object {
+              $_.Name -match 'license|notice|copying'
+            } | Copy-Item -Destination $destination.FullName -Recurse
+          }
+          $zip = 'terraframes-v0.1.0-windows-x64.zip'
+          Compress-Archive -Path $app -DestinationPath $zip
+          python -m zipfile -t $zip
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          gh release create v0.1.0 $zip --target $env:GITHUB_SHA --title 'TerraFrames v0.1.0' --notes 'Windows 64-bit portable build with a synthetic GeoTIFF sample series.'
+          exit $LASTEXITCODE
