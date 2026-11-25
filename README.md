@@ -1,6 +1,6 @@
 # 巨量遥感影像批量处理系统
 
-TerraFrames 1.0 · 快速盘点 GeoTIFF 文件头，通过参考图检查各影像格网和覆盖。
+TerraFrames 2.0 · 按块重投影和裁切。相同网格直接读取对应窗口。
 
 ## 运行
 
@@ -10,4 +10,5 @@ TerraFrames 1.0 · 快速盘点 GeoTIFF 文件头，通过参考图检查各影�
 python -m pip install -r requirements.txt
 python make_demo.py demo
 python inventory.py demo demo/20240101_reference.tif inventory.csv
+python grid_processing.py demo/20240201_half_pixel_grid.tif demo/20240101_reference.tif aligned.tif
 ```
