@@ -4,7 +4,7 @@
 
 以一张参考影像定义格网，批量检查输入、对齐像元和生成月度合成。工作台显示任务进度、完成项、失败项、复用项和实测耗时。
 
-[Windows 64 位便携版](https://github.com/Duixiansheng/terraframes/releases) · [历史版本](https://github.com/Duixiansheng/terraframes/tags)
+[**下载 v5.0.0 · Windows 64 位便携 ZIP**](https://github.com/Duixiansheng/terraframes/releases/download/v5.0.0/terraframes-v5.0.0-windows-x64.zip) · [历史版本](https://github.com/Duixiansheng/terraframes/tags)
 
 ## 主要功能
 
