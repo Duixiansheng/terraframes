@@ -1,48 +1,13 @@
-# TerraFrames
+# 巨量遥感影像批量处理系统
 
-**多时相 GeoTIFF 影像样片册与批量检查**
+TerraFrames 1.0 · 快速盘点 GeoTIFF 文件头，通过参考图检查各影像格网和覆盖。
 
-打开影像文件夹，按日期浏览缩略图。选择参考影像后，查看每张图的坐标系、像元数、分辨率、格线偏移、覆盖范围和内容配准抽查。标记想保留的影像，再将检查结果与选片状态导出为 CSV。
+## 运行
 
-## Windows 便携版
-
-[**下载 TerraFrames v0.1.0 · Windows 64 位 ZIP**](https://github.com/Duixiansheng/terraframes/releases/download/v0.1.0/terraframes-v0.1.0-windows-x64.zip)
-
-解压整个 `TerraFrames` 文件夹，运行 `TerraFrames.exe`。无需另装 Python。检查和预览在本机进行，源影像保持只读。
-
-## 用样例试一次
-
-1. 选择压缩包内的 `demo` 文件夹，保持「抽查内容配准」开启，点「开始检查」。
-2. `20240101_reference.tif` 会自动成为参考图。点击缩略图查看详情。
-3. 比较 `half_pixel_grid`、`cropped_aligned` 和 `shifted_content`。它们分别演示半格错位、格线对齐但覆盖不足，以及格网相同但影像内容出现平移。
-4. 在详情里加入选片，点「导出检查表」保存 CSV。报告包含全部已完成的影像和各自的选片状态。
-
-## 检查内容
-
-| 检查项 | 输出 |
-| --- | --- |
-| 坐标系和定位 | CRS、仿射定位是否可用。GCP、RPC 等非仿射定位标为无法核对格网。 |
-| 像元和波段 | 宽、高、像元总数、像元大小、数据类型、波段数和 NoData。 |
-| 格线和范围 | 区分半格错位、整格偏移、分辨率不同及覆盖不足。同格网的覆盖按像元窗口计算，其他图层使用包络估算。 |
-| 缩略图和有效覆盖 | 有仿射定位的影像以同一个参考窗口预览。有效比例来自缩略图抽样。云和云影需要已有的无效像元掩膜才会计入。 |
-| 内容配准抽查 | 对格线对齐的影像抽取小块，估计相对参考图的整数像元校正平移。样本不足或匹配不一致时报告「无法确认」。 |
-
-「抽样未检出平移」表示所检查的小块未检出整数像元级平移。局部形变、旋转和亚像元偏移需要专门验证。日期优先读取采集日期标签，其次识别文件名日期。无定位影像按其自身范围预览。
-
-大批量检查时可关闭内容配准抽查。程序逐张生成缩略图，缓存放在临时目录，退出时清理。
-
-## 从源码运行
-
-使用带 Tk 的 Python 3.13：
+需要 Python 3.13。在仓库目录运行：
 
 ```sh
 python -m pip install -r requirements.txt
-python desktop.py
-```
-
-生成并打开合成样例：
-
-```sh
 python make_demo.py demo
-python desktop.py demo
+python inventory.py demo demo/20240101_reference.tif inventory.csv
 ```
