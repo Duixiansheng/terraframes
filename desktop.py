@@ -8,6 +8,7 @@ import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 
 from PIL import Image, ImageTk
+from batch_studio import BatchWorkspace, VERSION
 from scene_core import (compare, describe, estimate_registration, export_csv, find_tiffs,
                         inspect, preview, read_patches, sample_windows)
 
@@ -78,7 +79,7 @@ def scan(folder, chosen_reference, recursive, registration, cache, stop, events)
 class TerraFrames:
     def __init__(self, root):
         self.root = root
-        root.title("TerraFrames · 多时相影像检查")
+        root.title("巨量遥感影像批量处理系统 · TerraFrames")
         root.geometry("1100x740")
         root.minsize(980, 680)
         root.configure(bg=PAPER)
@@ -95,6 +96,7 @@ class TerraFrames:
         self.page = 0
         self.running = False
         self.closing = False
+        self.batch = None
         self.files = tk.StringVar(value="请选择包含 GeoTIFF 的文件夹")
         self.reference_label = tk.StringVar(value="参考影像：自动选择最早的有定位影像")
         self.summary = tk.StringVar(value="选好文件夹后，缩略图将按日期排列。")
@@ -119,8 +121,12 @@ class TerraFrames:
         frame.pack(fill="both", expand=True)
         frame.columnconfigure(0, weight=1)
         frame.rowconfigure(5, weight=1)
-        ttk.Label(frame, text="TerraFrames", font=("Segoe UI Semibold", 23)).grid(row=0, sticky="w")
-        ttk.Label(frame, text="多时相影像检查", foreground=MUTED).grid(row=1, sticky="w", pady=(0, 12))
+        ttk.Label(frame, text="巨量遥感影像批量处理系统",
+                  font=("Microsoft YaHei UI", 19, "bold")).grid(row=0, sticky="w")
+        ttk.Label(frame, text=f"TerraFrames {VERSION}  ·  多时相影像检查", foreground=MUTED).grid(
+            row=1, sticky="w", pady=(0, 12))
+        ttk.Button(frame, text="批处理工作台…", style="Primary.TButton", command=self.open_batch).grid(
+            row=0, sticky="e")
 
         bar = ttk.Frame(frame)
         bar.grid(row=2, sticky="ew")
@@ -198,6 +204,13 @@ class TerraFrames:
         self.show_detail()
         self.folder_button.focus_set()
         root.after(100, self.poll)
+
+    def open_batch(self):
+        if self.batch is not None and self.batch.winfo_exists():
+            self.batch.lift()
+            return
+        reference = self.chosen_reference or (self.reference.path if self.reference else None)
+        self.batch = BatchWorkspace(self.root, self.folder, reference)
 
     def choose_folder(self):
         folder = filedialog.askdirectory(parent=self.root)
@@ -435,6 +448,9 @@ class TerraFrames:
                 self.summary.set(f"已导出 {output.name}")
 
     def close(self):
+        if self.batch is not None and self.batch.winfo_exists() and self.batch.running:
+            self.batch.close()
+            return
         if self.running:
             self.closing = True
             self.stop.set()

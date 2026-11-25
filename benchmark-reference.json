@@ -1,0 +1,35 @@
+{
+  "serial_median_seconds": 9.893244899999445,
+  "parallel_median_seconds": 2.797709599999962,
+  "speed_ratio": 3.5361943569838625,
+  "pixel_comparison": "exact_with_nan",
+  "rounds": [
+    {
+      "files": 12,
+      "serial_seconds": 9.993863599999713,
+      "parallel_seconds": 2.8904932999994344,
+      "resume_seconds": 0.11403419999987818,
+      "workers_used": 4,
+      "reused": 12
+    },
+    {
+      "files": 12,
+      "serial_seconds": 9.792626199999177,
+      "parallel_seconds": 2.7049259000004895,
+      "resume_seconds": 0.10157110000000102,
+      "workers_used": 4,
+      "reused": 12
+    }
+  ],
+  "test_case": {
+    "files": 12,
+    "width": 1024,
+    "height": 1024,
+    "bands": 2,
+    "source_dtype": "uint16",
+    "alignment": "six direct, six shifted",
+    "resampling": "bilinear",
+    "compression": "deflate",
+    "rounds": 2
+  }
+}
