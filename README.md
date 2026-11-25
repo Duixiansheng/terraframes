@@ -1,6 +1,6 @@
 # 巨量遥感影像批量处理系统
 
-TerraFrames 2.0 · 按块重投影和裁切。相同网格直接读取对应窗口。
+TerraFrames 3.0 · 并行处理独立文件，按预算限制并行度，重跑时复用已完成产物。
 
 ## 运行
 
@@ -11,4 +11,5 @@ python -m pip install -r requirements.txt
 python make_demo.py demo
 python inventory.py demo demo/20240101_reference.tif inventory.csv
 python grid_processing.py demo/20240201_half_pixel_grid.tif demo/20240101_reference.tif aligned.tif
+python batch_processing.py demo demo/20240101_reference.tif aligned-output --workers 4
 ```
